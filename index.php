@@ -16,7 +16,7 @@ namespace WPPerfomance\RemoveLazy;
  *
  * @package           wp-performance
  */
-
+require_once(dirname(__FILE__) . '/inc/parser.php');
 
 if (!is_admin()) {
     add_action('loop_start', 'WPPerfomance\inc\parser\parsing_start');
