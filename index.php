@@ -18,6 +18,8 @@ namespace WPPerfomance\RemoveLazy;
  */
 require_once(dirname(__FILE__) . '/inc/parser.php');
 
+// only front
 if (!is_admin()) {
-    add_action('loop_start', 'WPPerfomance\inc\parser\parsing_start');
+    // test with hook send_headers
+    add_action('send_headers', 'WPPerfomance\inc\parser\parsing_start');
 }

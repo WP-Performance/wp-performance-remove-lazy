@@ -2,18 +2,24 @@
 
 namespace WPPerfomance\inc\parser;
 
-
+/** determine if string is json */
+function isJSON($string)
+{
+    return is_string($string) && is_array(json_decode($string, true)) ? true : false;
+}
 
 /** find image with classes nolazy for replace lazy to eager */
-function eagerImage($html)
+function eagerImage($string)
 {
-    $content = mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8");
-    $document = new \DOMDocument();
-    libxml_use_internal_errors(true);
-    if (!$content) {
-        return $content;
+    // return all request json or empty
+    if (isJSON($string) || !$string) {
+        return $string;
     }
-    $document->loadHTML(utf8_decode($content));
+    $document = new \DOMDocument();
+    // hide error syntax warning
+    libxml_use_internal_errors(true);
+
+    $document->loadHTML($string);
     $xpath = new \DOMXpath($document);
 
     $lazyCover = $xpath->query("//img[contains(@class,'wp-block-cover__image-background')]");
@@ -33,9 +39,9 @@ function eagerImage($html)
 }
 
 
-function parsing_end(string $html): string
+function parsing_end(string $string): string
 {
-    return eagerImage($html);
+    return eagerImage($string);
 }
 
 
