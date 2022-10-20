@@ -15,6 +15,7 @@ function eagerImage($string)
     if (isJSON($string) || !$string) {
         return $string;
     }
+
     $document = new \DOMDocument();
     // hide error syntax warning
     libxml_use_internal_errors(true);
@@ -22,20 +23,49 @@ function eagerImage($string)
     $document->loadHTML($string);
     $xpath = new \DOMXpath($document);
 
+    parseQueryCover($xpath);
+    parseQueryImage($xpath);
+    parseQueryRelated($xpath);
+
+    return $document->saveHTML();
+}
+
+/**
+ * parse the cover block
+ */
+function parseQueryCover(\DOMXpath $xpath): void
+{
     $lazyCover = $xpath->query("//img[contains(@class,'wp-block-cover__image-background')]");
-
-    $lazyImgs = $xpath->query("//*[contains(@class,'nolazy')]/img");
-
     foreach ($lazyCover as $key => $value) {
         $value->setAttribute('loading', 'eager');
     }
+}
+
+/**
+ * parse image with no lazy class
+ */
+function parseQueryImage(\DOMXpath $xpath): void
+{
+    $lazyImgs = $xpath->query("//*[contains(@class,'nolazy')]/img");
 
     foreach ($lazyImgs as $key => $value) {
         $value->setAttribute('loading', 'eager');
     }
+}
 
+/**
+ * parse query with class wpp-related-query
+ */
+function parseQueryRelated(\DOMXpath $xpath): void
+{
+    $id = get_the_ID();
 
-    return $document->saveHTML();
+    if ($id) {
+        $posts = $xpath->query("//*[contains(@class, 'wpp-related-query')]/ul/li[contains(@class, ' post-{$id} ')]");
+        foreach ($posts as $key => $node) {
+            $node->parentNode->removeChild($node);
+        }
+    }
 }
 
 
