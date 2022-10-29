@@ -11,7 +11,7 @@ function isJSON($string)
 /**
  * extract img url from srcset string
  */
-function srcsetToArray($srcset, $min = 400, $max = 800)
+function srcsetToArray($srcset, $min = 400, $max = 900)
 {
     if (!$srcset) return [];
     // pattern for find size
@@ -47,7 +47,7 @@ function parse($string)
 
     $document = new \DOMDocument();
     // hide error syntax warning
-    libxml_use_internal_errors(true);
+    // libxml_use_internal_errors(true);
 
     $document->loadHTML(mb_convert_encoding($string, 'HTML-ENTITIES', 'UTF-8'));
 
@@ -66,8 +66,10 @@ function parseQueryCover(\DOMXpath $xpath, \DOMDocument $document): void
 {
     $lazyCover = $xpath->query("//img[contains(@class,'wp-block-cover__image-background')]");
 
+    // head
     [$head] = $xpath->query('/html/head');
-    $frag = $document->createDocumentFragment();
+    // first child of head
+    [$first] = $xpath->query('/html/head/*');
 
     foreach ($lazyCover as $key => $value) {
         $value->setAttribute('loading', 'eager');
@@ -75,10 +77,12 @@ function parseQueryCover(\DOMXpath $xpath, \DOMDocument $document): void
         $srcset = $value->getAttribute('srcset');
         $arr = srcsetToArray($srcset);
         foreach ($arr as $k => $v) {
-            $frag->appendXML('<link rel="prefetch" href="' . $v . '" />');
+            $pre = $document->createElement('link');
+            $pre->setAttribute('rel', 'prefetch');
+            $pre->setAttribute('href', $v);
+            $head->insertBefore($pre, $first);
         }
     }
-    $head->appendChild($frag);
 }
 
 /**
@@ -88,8 +92,10 @@ function parseQueryImage(\DOMXpath $xpath, \DOMDocument $document): void
 {
     $lazyImgs = $xpath->query("//*[contains(@class,'nolazy')]/img");
 
+    // head
     [$head] = $xpath->query('/html/head');
-    $frag = $document->createDocumentFragment();
+    // first child of head
+    [$first] = $xpath->query('/html/head/*');
 
     foreach ($lazyImgs as $key => $value) {
         $value->setAttribute('loading', 'eager');
@@ -97,10 +103,12 @@ function parseQueryImage(\DOMXpath $xpath, \DOMDocument $document): void
         $srcset = $value->getAttribute('srcset');
         $arr = srcsetToArray($srcset);
         foreach ($arr as $k => $v) {
-            $frag->appendXML('<link rel="prefetch" href="' . $v . '" />');
+            $pre = $document->createElement('link');
+            $pre->setAttribute('rel', 'prefetch');
+            $pre->setAttribute('href', $v);
+            $head->insertBefore($pre, $first);
         }
     }
-    $head->appendChild($frag);
 }
 
 
