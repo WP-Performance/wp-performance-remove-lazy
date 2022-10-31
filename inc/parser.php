@@ -64,6 +64,8 @@ function parse($string)
  */
 function parseQueryCover(\DOMXpath $xpath, \DOMDocument $document): void
 {
+    $config = include(dirname(__FILE__) . './../config.php');
+
     $lazyCover = $xpath->query("//img[contains(@class,'wp-block-cover__image-background')]");
 
     // head
@@ -74,13 +76,15 @@ function parseQueryCover(\DOMXpath $xpath, \DOMDocument $document): void
     foreach ($lazyCover as $key => $value) {
         $value->setAttribute('loading', 'eager');
         // add prefetch
-        $srcset = $value->getAttribute('srcset');
-        $arr = srcsetToArray($srcset);
-        foreach ($arr as $k => $v) {
-            $pre = $document->createElement('link');
-            $pre->setAttribute('rel', 'prefetch');
-            $pre->setAttribute('href', $v);
-            $head->insertBefore($pre, $first);
+        if ($config['prefetch'] === true) {
+            $srcset = $value->getAttribute('srcset');
+            $arr = srcsetToArray($srcset);
+            foreach ($arr as $k => $v) {
+                $pre = $document->createElement('link');
+                $pre->setAttribute('rel', 'prefetch');
+                $pre->setAttribute('href', $v);
+                $head->insertBefore($pre, $first);
+            }
         }
     }
 }
@@ -90,6 +94,8 @@ function parseQueryCover(\DOMXpath $xpath, \DOMDocument $document): void
  */
 function parseQueryImage(\DOMXpath $xpath, \DOMDocument $document): void
 {
+    $config = include(dirname(__FILE__) . './../config.php');
+
     $lazyImgs = $xpath->query("//*[contains(@class,'nolazy')]/img");
 
     // head
@@ -99,14 +105,16 @@ function parseQueryImage(\DOMXpath $xpath, \DOMDocument $document): void
 
     foreach ($lazyImgs as $key => $value) {
         $value->setAttribute('loading', 'eager');
-        // add prefetch
-        $srcset = $value->getAttribute('srcset');
-        $arr = srcsetToArray($srcset);
-        foreach ($arr as $k => $v) {
-            $pre = $document->createElement('link');
-            $pre->setAttribute('rel', 'prefetch');
-            $pre->setAttribute('href', $v);
-            $head->insertBefore($pre, $first);
+        if ($config['prefetch'] === true) {
+            // add prefetch
+            $srcset = $value->getAttribute('srcset');
+            $arr = srcsetToArray($srcset);
+            foreach ($arr as $k => $v) {
+                $pre = $document->createElement('link');
+                $pre->setAttribute('rel', 'prefetch');
+                $pre->setAttribute('href', $v);
+                $head->insertBefore($pre, $first);
+            }
         }
     }
 }
