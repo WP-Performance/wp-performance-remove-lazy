@@ -82,6 +82,7 @@ function parseQueryCover(\DOMXpath $xpath, \DOMDocument $document): void
             foreach ($arr as $k => $v) {
                 $pre = $document->createElement('link');
                 $pre->setAttribute('rel', 'preload');
+                $pre->setAttribute('as', 'image');
                 $pre->setAttribute('href', $v);
                 $head->insertBefore($pre, $first);
             }
@@ -112,6 +113,7 @@ function parseQueryImage(\DOMXpath $xpath, \DOMDocument $document): void
             foreach ($arr as $k => $v) {
                 $pre = $document->createElement('link');
                 $pre->setAttribute('rel', 'preload');
+                $pre->setAttribute('as', 'image');
                 $pre->setAttribute('href', $v);
                 $head->insertBefore($pre, $first);
             }
