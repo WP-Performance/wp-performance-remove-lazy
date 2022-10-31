@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'prefetch' => false
+    'preload' => true
 ];

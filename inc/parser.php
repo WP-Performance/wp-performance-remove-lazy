@@ -76,12 +76,12 @@ function parseQueryCover(\DOMXpath $xpath, \DOMDocument $document): void
     foreach ($lazyCover as $key => $value) {
         $value->setAttribute('loading', 'eager');
         // add prefetch
-        if ($config['prefetch'] === true) {
+        if ($config['preload'] === true) {
             $srcset = $value->getAttribute('srcset');
             $arr = srcsetToArray($srcset);
             foreach ($arr as $k => $v) {
                 $pre = $document->createElement('link');
-                $pre->setAttribute('rel', 'prefetch');
+                $pre->setAttribute('rel', 'preload');
                 $pre->setAttribute('href', $v);
                 $head->insertBefore($pre, $first);
             }
@@ -105,13 +105,13 @@ function parseQueryImage(\DOMXpath $xpath, \DOMDocument $document): void
 
     foreach ($lazyImgs as $key => $value) {
         $value->setAttribute('loading', 'eager');
-        if ($config['prefetch'] === true) {
+        if ($config['preload'] === true) {
             // add prefetch
             $srcset = $value->getAttribute('srcset');
             $arr = srcsetToArray($srcset);
             foreach ($arr as $k => $v) {
                 $pre = $document->createElement('link');
-                $pre->setAttribute('rel', 'prefetch');
+                $pre->setAttribute('rel', 'preload');
                 $pre->setAttribute('href', $v);
                 $head->insertBefore($pre, $first);
             }
