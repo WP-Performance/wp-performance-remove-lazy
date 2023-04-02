@@ -97,7 +97,7 @@ function parseQueryImage(\DOMXpath $xpath, \DOMDocument $document): void
 {
     $config = include(dirname(__FILE__) . './../config.php');
 
-    $lazyImgs = $xpath->query("//*[contains(@class,'nolazy')]/img");
+    $lazyImgs = $xpath->query("//*[contains(@class,'nolazy')]/picture|//*[contains(@class,'nolazy')]/picture/img|//*[contains(@class,'nolazy')]/img");
 
     // head
     [$head] = $xpath->query('/html/head');
